@@ -5,6 +5,13 @@ export type LeaderboardRow = {
   events: number;
 };
 
+export type LeadersOptions = {
+  limit?: number;
+  order?: "asc" | "desc";
+  min?: number;
+  max?: number;
+};
+
 export type SummaryStats = {
   events: number;
   firstEvent: string;
