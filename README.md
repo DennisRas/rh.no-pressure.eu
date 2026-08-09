@@ -53,7 +53,7 @@ npm run report -- <name> [options]
 
 ### `summary`
 
-Overall scalar stats for events in range (counts, averages, busiest periods, top leader/raider, title difficulty tags, and similar).
+Scalar stats for events in range.
 
 | Argument              | Default | Description          |
 | --------------------- | ------- | -------------------- |
@@ -69,7 +69,7 @@ npm run report -- summary --json
 
 ### `leaders`
 
-Raid leader leaderboard by event count. Filters apply before sort and limit; ranks are recomputed on the result.
+Leaderboard by events led.
 
 | Argument              | Default | Description                     |
 | --------------------- | ------- | ------------------------------- |
@@ -90,18 +90,18 @@ npm run report -- leaders --limit 0 --json
 
 ### `raiders`
 
-Raider leaderboard by distinct events signed. Needs signup data in the cache. Same filter/order/limit behavior as `leaders`. Use `--exclude` to ignore signup `className` values (Raid-Helper roles like `absence`, `bench`, `tentative`, `melee`, `tank`, …).
+Leaderboard by distinct events signed.
 
-| Argument              | Default | Description                            |
-| --------------------- | ------- | -------------------------------------- |
-| `--from <date\|unix>` | open    | Earliest event start                   |
-| `--to <date\|unix>`   | open    | Latest event start                     |
-| `--order <asc\|desc>` | `desc`  | Sort by distinct event count           |
-| `--min <n>`           | open    | Minimum event count (inclusive)        |
-| `--max <n>`           | open    | Maximum event count (inclusive)        |
-| `--exclude <list>`    | none    | Comma-separated `className`s to ignore |
-| `--limit <n>`         | `25`    | Max rows (`0` = all)                   |
-| `--json`              | off     | Print JSON                             |
+| Argument              | Default | Description                                  |
+| --------------------- | ------- | -------------------------------------------- |
+| `--from <date\|unix>` | open    | Earliest event start                         |
+| `--to <date\|unix>`   | open    | Latest event start                           |
+| `--order <asc\|desc>` | `desc`  | Sort by event count                          |
+| `--min <n>`           | open    | Minimum event count (inclusive)              |
+| `--max <n>`           | open    | Maximum event count (inclusive)              |
+| `--exclude <list>`    | none    | Ignore signup classNames (`absence,bench,…`) |
+| `--limit <n>`         | `25`    | Max rows (`0` = all)                         |
+| `--json`              | off     | Print JSON                                   |
 
 ```bash
 npm run report -- raiders
