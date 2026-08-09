@@ -2,7 +2,9 @@ import type { RaidEvent } from "../types/events.ts";
 import type { Raider } from "../types/people.ts";
 import { uniqueCharacters } from "./characters.ts";
 
-export function groupRaiders(events: Iterable<RaidEvent>): Raider[] {
+export function groupRaiders(events: Iterable<RaidEvent>, options: { exclude?: Iterable<string> } = {}): Raider[] {
+  const exclude = new Set([...(options.exclude ?? [])].map((value) => value.toLowerCase()));
+
   const byId = new Map<
     string,
     {
@@ -17,6 +19,7 @@ export function groupRaiders(events: Iterable<RaidEvent>): Raider[] {
   for (const event of events) {
     for (const signup of event.signUps ?? []) {
       if (!signup.userId) continue;
+      if (exclude.has((signup.className ?? "").toLowerCase())) continue;
 
       let raider = byId.get(signup.userId);
       if (!raider) {

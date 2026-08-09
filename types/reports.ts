@@ -5,11 +5,16 @@ export type LeaderboardRow = {
   events: number;
 };
 
-export type LeadersOptions = {
+export type LeaderboardOptions = {
   limit?: number;
   order?: "asc" | "desc";
   min?: number;
   max?: number;
+};
+
+export type RaidersOptions = LeaderboardOptions & {
+  // Raid-Helper signup className values, e.g. absence, bench, tentative
+  exclude?: string[];
 };
 
 export type SummaryStats = {

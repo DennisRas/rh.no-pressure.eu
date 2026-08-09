@@ -88,6 +88,29 @@ npm run report -- leaders --order asc --min 1 --max 5
 npm run report -- leaders --limit 0 --json
 ```
 
+### `raiders`
+
+Raider leaderboard by distinct events signed. Needs signup data in the cache. Same filter/order/limit behavior as `leaders`. Use `--exclude` to ignore signup `className` values (Raid-Helper roles like `absence`, `bench`, `tentative`, `melee`, `tank`, …).
+
+| Argument              | Default | Description                            |
+| --------------------- | ------- | -------------------------------------- |
+| `--from <date\|unix>` | open    | Earliest event start                   |
+| `--to <date\|unix>`   | open    | Latest event start                     |
+| `--order <asc\|desc>` | `desc`  | Sort by distinct event count           |
+| `--min <n>`           | open    | Minimum event count (inclusive)        |
+| `--max <n>`           | open    | Maximum event count (inclusive)        |
+| `--exclude <list>`    | none    | Comma-separated `className`s to ignore |
+| `--limit <n>`         | `25`    | Max rows (`0` = all)                   |
+| `--json`              | off     | Print JSON                             |
+
+```bash
+npm run report -- raiders
+npm run report -- raiders --exclude absence,bench,tentative
+npm run report -- raiders --from 2026-01-01 --to 2026-12-31
+npm run report -- raiders --order asc --min 1 --max 5
+npm run report -- raiders --limit 0 --json
+```
+
 ## Development
 
 ```bash

@@ -1,11 +1,13 @@
 import { toIsoDate, toUnix } from "../helpers/time.ts";
 import type { EventFilters } from "../types/events.ts";
-import type { LeadersOptions } from "../types/reports.ts";
+import type { LeaderboardOptions, RaidersOptions } from "../types/reports.ts";
 import { buildLeaders, formatLeaders } from "./reports/leaders.ts";
+import { buildRaiders, formatRaiders } from "./reports/raiders.ts";
 import { buildSummary, formatSummary } from "./reports/summary.ts";
 
-const REPORTS = ["summary", "leaders"] as const;
+const REPORTS = ["summary", "leaders", "raiders"] as const;
 type ReportName = (typeof REPORTS)[number];
+const LEADERBOARDS = new Set<ReportName>(["leaders", "raiders"]);
 
 type ReportArgs = {
   name: ReportName;
@@ -15,6 +17,7 @@ type ReportArgs = {
   order: "asc" | "desc";
   min?: number;
   max?: number;
+  exclude: string[];
   json: boolean;
 };
 
@@ -34,11 +37,14 @@ function formatReportHeader(args: ReportArgs): string {
     lines.push("Range:  all cached events");
   }
 
-  if (args.name === "leaders") {
+  if (LEADERBOARDS.has(args.name)) {
     lines.push(`Order:  ${args.order}`);
     if (args.min != null || args.max != null) {
       lines.push(`Min:    ${args.min ?? "(open)"}`);
       lines.push(`Max:    ${args.max ?? "(open)"}`);
+    }
+    if (args.name === "raiders" && args.exclude.length > 0) {
+      lines.push(`Exclude: ${args.exclude.join(", ")}`);
     }
     lines.push(`Limit:  ${args.limit <= 0 ? "all" : args.limit}`);
   }
@@ -52,22 +58,23 @@ function printHelp() {
 Reports (cache only):
   summary
   leaders
+  raiders
 
 Options:
   --from <date|unix>   Earliest event start
   --to <date|unix>     Latest event start
   --limit <n>          Max rows for leaderboards (default 25, 0 = all)
-  --order <asc|desc>   Sort by event count (leaders, default desc)
-  --min <n>            Minimum event count (leaders)
-  --max <n>            Maximum event count (leaders)
+  --order <asc|desc>   Sort by event count (leaderboards, default desc)
+  --min <n>            Minimum event count (leaderboards)
+  --max <n>            Maximum event count (leaderboards)
+  --exclude <list>     Skip signup classNames (raiders, comma-separated)
   --json               Print JSON
   -h, --help           Help
 
 Examples:
   npm run report -- summary
   npm run report -- leaders
-  npm run report -- leaders --from 2024-01-01 --to 2024-12-31
-  npm run report -- leaders --order asc --min 1 --max 5
+  npm run report -- raiders --exclude absence,bench,tentative
   npm run report -- leaders --limit 50 --json
 `);
 }
@@ -78,6 +85,17 @@ function parseNonNegInt(flag: string, value: string): number {
     throw new Error(`${flag} must be an integer >= 0`);
   }
   return n;
+}
+
+function parseExcludeList(value: string): string[] {
+  const items = value
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+  if (items.length === 0) {
+    throw new Error("--exclude needs at least one className");
+  }
+  return [...new Set(items)];
 }
 
 function parseArgs(argv: string[]) {
@@ -99,6 +117,7 @@ function parseArgs(argv: string[]) {
   let order: "asc" | "desc" = "desc";
   let min: number | undefined;
   let max: number | undefined;
+  let exclude: string[] = [];
   let json = false;
 
   for (let i = 1; i < argv.length; i += 1) {
@@ -126,6 +145,9 @@ function parseArgs(argv: string[]) {
     } else if (arg === "--max" && next) {
       max = parseNonNegInt("--max", next);
       i += 1;
+    } else if (arg === "--exclude" && next) {
+      exclude = parseExcludeList(next);
+      i += 1;
     } else if (arg === "--json") {
       json = true;
     } else if (arg === "--help" || arg === "-h") {
@@ -141,8 +163,11 @@ function parseArgs(argv: string[]) {
   if (min != null && max != null && min > max) {
     throw new Error("--min cannot be greater than --max");
   }
+  if (exclude.length > 0 && name !== "raiders") {
+    throw new Error("--exclude is only supported for the raiders report");
+  }
 
-  return { name: name as ReportName, from, to, limit, order, min, max, json } satisfies ReportArgs;
+  return { name: name as ReportName, from, to, limit, order, min, max, exclude, json } satisfies ReportArgs;
 }
 
 async function main() {
@@ -165,18 +190,30 @@ async function main() {
     return;
   }
 
+  const options: LeaderboardOptions = {
+    limit: args.limit,
+    order: args.order,
+    min: args.min,
+    max: args.max,
+  };
+
   if (args.name === "leaders") {
-    const options: LeadersOptions = {
-      limit: args.limit,
-      order: args.order,
-      min: args.min,
-      max: args.max,
-    };
     const rows = await buildLeaders(filters, options);
     if (args.json) {
       console.log(JSON.stringify(rows, null, 2));
     } else {
       console.log(formatLeaders(rows));
+    }
+    return;
+  }
+
+  if (args.name === "raiders") {
+    const raiderOptions: RaidersOptions = { ...options, exclude: args.exclude };
+    const rows = await buildRaiders(filters, raiderOptions);
+    if (args.json) {
+      console.log(JSON.stringify(rows, null, 2));
+    } else {
+      console.log(formatRaiders(rows));
     }
   }
 }
