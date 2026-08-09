@@ -1,9 +1,6 @@
+import type { GetEventsOptions } from "../types/api.ts";
 import type { EventsPage, EventsQuery, RaidEvent, ScheduledEvent, ScheduledEventsResponse } from "../types/events.ts";
-import { credentials, request, type RequestOptions } from "./client.ts";
-
-export type GetEventsOptions = Pick<RequestOptions, "onRateLimited"> & {
-  onPage?: (info: { page: number; pages: number; fetched: number }) => void;
-};
+import { credentials, request } from "./client.ts";
 
 function eventListHeaders(query: EventsQuery & { page?: number }): Record<string, string> {
   const headers: Record<string, string> = {};

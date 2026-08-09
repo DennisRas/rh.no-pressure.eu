@@ -14,7 +14,7 @@ export type RaidEvent = {
   description?: string;
   templateId?: string;
   color?: string;
-  channelId?: string; // Forum posts sometimes use the event id here.
+  channelId?: string; // forum posts sometimes reuse the event id
   leaderId?: string;
   leaderName?: string;
   startTime: number; // unix seconds

@@ -1,5 +1,6 @@
+import type { RequestOptions } from "../types/api.ts";
 import type { AttendanceQuery, AttendanceResponse } from "../types/attendance.ts";
-import { credentials, request, type RequestOptions } from "./client.ts";
+import { credentials, request } from "./client.ts";
 
 function headerList(value: string | string[]): string {
   return Array.isArray(value) ? value.join(",") : value;

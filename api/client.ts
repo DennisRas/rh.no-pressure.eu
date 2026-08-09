@@ -1,4 +1,5 @@
 import "dotenv/config";
+import type { RequestOptions } from "../types/api.ts";
 
 const BASE_URL = "https://raid-helper.xyz/api/v4";
 
@@ -61,12 +62,6 @@ function retryAfterMs(response: Response, body: string) {
 
   return RATE_LIMIT_WINDOW_MS;
 }
-
-export type RequestOptions = {
-  headers?: Record<string, string>;
-  auth?: boolean;
-  onRateLimited?: (info: { path: string; waitMs: number; attempt: number }) => void;
-};
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { headers = {}, auth = true, onRateLimited } = options;

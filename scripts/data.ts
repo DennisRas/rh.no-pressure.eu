@@ -1,6 +1,7 @@
-import { getEvents } from "../lib/api/events.ts";
-import { latestCachedEventStartTime, upsertEvents } from "../lib/cache/events.ts";
-import type { EventsQuery } from "../lib/types/events.ts";
+import { getEvents } from "../api/events.ts";
+import { latestCachedEventStartTime, upsertEvents } from "../cache/events.ts";
+import type { EventsQuery } from "../types/events.ts";
+import { toUnix } from "../helpers/time.ts";
 
 function printHelp() {
   console.log(`Usage: npm run data -- <scope> [options]
@@ -23,15 +24,6 @@ Examples:
   npm run data -- --from 2026-01-01
   npm run data -- --from 2026-08-01 --to 2026-08-31
 `);
-}
-
-function toUnix(value: string): number {
-  if (/^\d+$/.test(value)) return Number(value);
-  const ms = Date.parse(value);
-  if (Number.isNaN(ms)) {
-    throw new Error(`Invalid date/time: ${value}`);
-  }
-  return Math.floor(ms / 1000);
 }
 
 type Scope = { kind: "all" } | { kind: "since-last" } | { kind: "from"; from: number };

@@ -4,25 +4,23 @@ Scripts for working with [Raid-Helper](https://raid-helper.xyz) data for the [No
 
 ## Setup
 
-Node 20+, then:
+Node 20+:
 
 ```bash
 npm install
 cp .env.example .env
 ```
 
-Fill in `.env`:
+| Variable                | Source                                          |
+| ----------------------- | ----------------------------------------------- |
+| `RAID_HELPER_API_KEY`   | Discord `/apikey` (Admin or Manage Server)      |
+| `RAID_HELPER_SERVER_ID` | Discord server id (right click the server icon) |
 
-| Variable                | Source                                      |
-| ----------------------- | ------------------------------------------- |
-| `RAID_HELPER_API_KEY`   | Discord `/apikey` (Admin or Manage Server)  |
-| `RAID_HELPER_SERVER_ID` | Discord server id (Right click server icon) |
+Do not commit `.env` or `data/`.
 
-Keep `.env` and `data/` out of git.
+## Data
 
-## Commands
-
-Fetch events into `data/events.json`. You must pass a scope:
+Fetch posted events into the local cache (`data/events.json`). A scope is required.
 
 ```bash
 npm run data -- --all
@@ -31,18 +29,42 @@ npm run data -- --from 2026-01-01
 npm run data -- --from 2026-08-01 --to 2026-08-31
 ```
 
-| Command                   | What it does                      |
-| ------------------------- | --------------------------------- |
-| `npm run data -- <scope>` | Fetch events into the local cache |
-| `npm run typecheck`       | Run `tsc --noEmit`                |
-| `npm run format`          | Run Prettier                      |
+| Scope                 | Meaning                                                      |
+| --------------------- | ------------------------------------------------------------ |
+| `--all`               | All posted events                                            |
+| `--since-last`        | From the newest event start time already in the cache        |
+| `--from <date\|unix>` | From a given start time                                      |
+| `--to <date\|unix>`   | Optional end of the window (with `--from` or `--since-last`) |
+| `--no-signups`        | Skip signup lists                                            |
+
+## Reports
+
+Reports read from the cache only. Optional shared flags: `--from`, `--to`, `--json`.
+
+```bash
+npm run report -- <name>
+npm run report -- <name> --from 2024-01-01 --to 2024-12-31
+npm run report -- <name> --json
+```
+
+| Report    | Description          |
+| --------- | -------------------- |
+| `summary` | Overall scalar stats |
+
+## Development
+
+```bash
+npm run typecheck
+npm run format
+```
 
 ## Layout
 
 ```text
-lib/api/      Raid-Helper client
-lib/cache/    Local JSON cache
-lib/types/    Types
-scripts/      CLI scripts
-data/         Cache files (gitignored)
+api/           Raid-Helper client
+cache/         Local JSON cache
+types/         Shared TypeScript types
+helpers/       Shared helpers
+scripts/       CLI entrypoints and report modules
+data/          Local cache (gitignored)
 ```

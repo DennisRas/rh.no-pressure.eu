@@ -9,6 +9,7 @@
   },
   "scripts": {
     "data": "tsx scripts/data.ts",
+    "report": "tsx scripts/report.ts",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write ."
   },
