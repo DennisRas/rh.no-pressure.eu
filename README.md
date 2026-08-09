@@ -228,7 +228,7 @@ npm run report -- alts --min 2
 
 ### `difficulties`
 
-Events grouped by title keyword: mythic, heroic, normal, other.
+Events grouped by title difficulty tags (mythic/`myth`/`(M)`/`2M`, heroic/`hc`/`(H)`, normal/`nm`/`(N)`/`7/8N`, else other).
 
 | Argument              | Default | Description          |
 | --------------------- | ------- | -------------------- |
