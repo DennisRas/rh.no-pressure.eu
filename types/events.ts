@@ -8,6 +8,8 @@ export type SignUp = {
   note?: string;
 };
 
+export type TitleDifficulty = "mythic" | "heroic" | "normal" | "other";
+
 export type RaidEvent = {
   id: string;
   title: string;

@@ -17,6 +17,52 @@ export type RaidersOptions = LeaderboardOptions & {
   exclude?: string[];
 };
 
+export type RoleRow = {
+  rank: number;
+  role: string;
+  signups: number;
+  events: number;
+};
+
+export type SpecRow = {
+  rank: number;
+  spec: string;
+  signups: number;
+  events: number;
+};
+
+export type ClassRow = {
+  rank: number;
+  className: string;
+  signups: number;
+  events: number;
+};
+
+export type StreakRow = {
+  rank: number;
+  userId: string;
+  name: string;
+  streak: number; // consecutive weeks
+  events: number; // events during that streak
+};
+
+export type AltRow = {
+  rank: number;
+  userId: string;
+  name: string;
+  alts: number;
+  events: number;
+  characters: string;
+};
+
+export type DifficultyRow = {
+  rank: number;
+  difficulty: string;
+  events: number;
+  signups: number;
+  raiders: number;
+};
+
 export type SummaryStats = {
   events: number;
   firstEvent: string;

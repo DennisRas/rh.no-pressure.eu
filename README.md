@@ -111,6 +111,123 @@ npm run report -- raiders --order asc --min 1 --max 5
 npm run report -- raiders --limit 0 --json
 ```
 
+### `roles`
+
+Signup role buttons (`className`: melee, tank, absence, …).
+
+| Argument              | Default | Description          |
+| --------------------- | ------- | -------------------- |
+| `--from <date\|unix>` | open    | Earliest event start |
+| `--to <date\|unix>`   | open    | Latest event start   |
+| `--order <asc\|desc>` | `desc`  | Sort by signup count |
+| `--min <n>`           | open    | Minimum signup count |
+| `--max <n>`           | open    | Maximum signup count |
+| `--limit <n>`         | `25`    | Max rows (`0` = all) |
+| `--json`              | off     | Print JSON           |
+
+```bash
+npm run report -- roles
+npm run report -- roles --limit 0
+```
+
+### `specs`
+
+Signup specs from Raid-Helper emote names, normalized (e.g. `Frost1` → Frost (Death Knight)).
+
+| Argument              | Default | Description                                  |
+| --------------------- | ------- | -------------------------------------------- |
+| `--from <date\|unix>` | open    | Earliest event start                         |
+| `--to <date\|unix>`   | open    | Latest event start                           |
+| `--order <asc\|desc>` | `desc`  | Sort by signup count                         |
+| `--min <n>`           | open    | Minimum signup count                         |
+| `--max <n>`           | open    | Maximum signup count                         |
+| `--exclude <list>`    | none    | Ignore signup classNames (`absence,bench,…`) |
+| `--limit <n>`         | `25`    | Max rows (`0` = all)                         |
+| `--json`              | off     | Print JSON                                   |
+
+```bash
+npm run report -- specs
+npm run report -- specs --exclude absence,bench,tentative
+```
+
+### `classes`
+
+WoW classes resolved from class buttons or mapped from specs.
+
+| Argument              | Default | Description                                  |
+| --------------------- | ------- | -------------------------------------------- |
+| `--from <date\|unix>` | open    | Earliest event start                         |
+| `--to <date\|unix>`   | open    | Latest event start                           |
+| `--order <asc\|desc>` | `desc`  | Sort by signup count                         |
+| `--min <n>`           | open    | Minimum signup count                         |
+| `--max <n>`           | open    | Maximum signup count                         |
+| `--exclude <list>`    | none    | Ignore signup classNames (`absence,bench,…`) |
+| `--limit <n>`         | `25`    | Max rows (`0` = all)                         |
+| `--json`              | off     | Print JSON                                   |
+
+```bash
+npm run report -- classes
+npm run report -- classes --exclude absence,bench,tentative
+```
+
+### `streaks`
+
+Longest consecutive weeks with at least one signup (UTC weeks starting Monday).
+
+| Argument              | Default | Description                                  |
+| --------------------- | ------- | -------------------------------------------- |
+| `--from <date\|unix>` | open    | Earliest event start                         |
+| `--to <date\|unix>`   | open    | Latest event start                           |
+| `--order <asc\|desc>` | `desc`  | Sort by streak length                        |
+| `--min <n>`           | open    | Minimum streak weeks                         |
+| `--max <n>`           | open    | Maximum streak weeks                         |
+| `--exclude <list>`    | none    | Ignore signup classNames (`absence,bench,…`) |
+| `--limit <n>`         | `25`    | Max rows (`0` = all)                         |
+| `--json`              | off     | Print JSON                                   |
+
+```bash
+npm run report -- streaks
+npm run report -- streaks --exclude absence,bench,tentative --min 4
+```
+
+### `alts`
+
+Discord users ranked by distinct characters parsed from signup names.
+
+| Argument              | Default | Description                 |
+| --------------------- | ------- | --------------------------- |
+| `--from <date\|unix>` | open    | Earliest event start        |
+| `--to <date\|unix>`   | open    | Latest event start          |
+| `--order <asc\|desc>` | `desc`  | Sort by alt count           |
+| `--min <n>`           | open    | Minimum distinct characters |
+| `--max <n>`           | open    | Maximum distinct characters |
+| `--limit <n>`         | `25`    | Max rows (`0` = all)        |
+| `--json`              | off     | Print JSON                  |
+
+```bash
+npm run report -- alts
+npm run report -- alts --min 2
+```
+
+### `difficulties`
+
+Events grouped by title keyword: mythic, heroic, normal, other.
+
+| Argument              | Default | Description          |
+| --------------------- | ------- | -------------------- |
+| `--from <date\|unix>` | open    | Earliest event start |
+| `--to <date\|unix>`   | open    | Latest event start   |
+| `--order <asc\|desc>` | `desc`  | Sort by event count  |
+| `--min <n>`           | open    | Minimum event count  |
+| `--max <n>`           | open    | Maximum event count  |
+| `--limit <n>`         | `25`    | Max rows (`0` = all) |
+| `--json`              | off     | Print JSON           |
+
+```bash
+npm run report -- difficulties
+npm run report -- difficulties --from 2026-01-01
+```
+
 ## Development
 
 ```bash

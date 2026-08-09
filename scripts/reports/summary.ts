@@ -1,5 +1,5 @@
 import { listCachedEvents } from "../../cache/events.ts";
-import { signupCount } from "../../helpers/events.ts";
+import { signupCount, titleDifficulty } from "../../helpers/events.ts";
 import { groupLeaders } from "../../helpers/leaders.ts";
 import { maxEntry, median, round } from "../../helpers/math.ts";
 import chalk from "chalk";
@@ -18,14 +18,6 @@ function minEntry<K>(counts: Map<K, number>): { key: K; count: number } | null {
     if (!best || count < best.count) best = { key, count };
   }
   return best;
-}
-
-function titleBucket(title: string): "mythic" | "heroic" | "normal" | null {
-  const t = title.toLowerCase();
-  if (t.includes("mythic")) return "mythic";
-  if (t.includes("heroic")) return "heroic";
-  if (t.includes("normal")) return "normal";
-  return null;
 }
 
 export async function buildSummary(filters: EventFilters = {}): Promise<SummaryStats> {
@@ -97,7 +89,7 @@ export async function buildSummary(filters: EventFilters = {}): Promise<SummaryS
       else if (role === "tentative") tentativeSignups += 1;
     }
 
-    const bucket = titleBucket(event.title ?? "");
+    const bucket = titleDifficulty(event.title ?? "");
     if (bucket === "mythic") titleMythic += 1;
     else if (bucket === "heroic") titleHeroic += 1;
     else if (bucket === "normal") titleNormal += 1;

@@ -1,13 +1,39 @@
 import { toIsoDate, toUnix } from "../helpers/time.ts";
 import type { EventFilters } from "../types/events.ts";
 import type { LeaderboardOptions, RaidersOptions } from "../types/reports.ts";
+import { buildAlts, formatAlts } from "./reports/alts.ts";
+import { buildClasses, formatClasses } from "./reports/classes.ts";
+import { buildDifficulties, formatDifficulties } from "./reports/difficulties.ts";
 import { buildLeaders, formatLeaders } from "./reports/leaders.ts";
 import { buildRaiders, formatRaiders } from "./reports/raiders.ts";
+import { buildRoles, formatRoles } from "./reports/roles.ts";
+import { buildSpecs, formatSpecs } from "./reports/specs.ts";
+import { buildStreaks, formatStreaks } from "./reports/streaks.ts";
 import { buildSummary, formatSummary } from "./reports/summary.ts";
 
-const REPORTS = ["summary", "leaders", "raiders"] as const;
+const REPORTS = [
+  "summary",
+  "leaders",
+  "raiders",
+  "roles",
+  "specs",
+  "classes",
+  "streaks",
+  "alts",
+  "difficulties",
+] as const;
 type ReportName = (typeof REPORTS)[number];
-const LEADERBOARDS = new Set<ReportName>(["leaders", "raiders"]);
+const LEADERBOARDS = new Set<ReportName>([
+  "leaders",
+  "raiders",
+  "roles",
+  "specs",
+  "classes",
+  "streaks",
+  "alts",
+  "difficulties",
+]);
+const EXCLUDE_REPORTS = new Set<ReportName>(["raiders", "streaks", "specs", "classes"]);
 
 type ReportArgs = {
   name: ReportName;
@@ -43,7 +69,7 @@ function formatReportHeader(args: ReportArgs): string {
       lines.push(`Min:    ${args.min ?? "(open)"}`);
       lines.push(`Max:    ${args.max ?? "(open)"}`);
     }
-    if (args.name === "raiders" && args.exclude.length > 0) {
+    if (EXCLUDE_REPORTS.has(args.name) && args.exclude.length > 0) {
       lines.push(`Exclude: ${args.exclude.join(", ")}`);
     }
     lines.push(`Limit:  ${args.limit <= 0 ? "all" : args.limit}`);
@@ -59,23 +85,30 @@ Reports (cache only):
   summary
   leaders
   raiders
+  roles
+  specs
+  classes
+  streaks
+  alts
+  difficulties
 
 Options:
   --from <date|unix>   Earliest event start
   --to <date|unix>     Latest event start
   --limit <n>          Max rows for leaderboards (default 25, 0 = all)
-  --order <asc|desc>   Sort by event count (leaderboards, default desc)
-  --min <n>            Minimum event count (leaderboards)
-  --max <n>            Maximum event count (leaderboards)
-  --exclude <list>     Skip signup classNames (raiders, comma-separated)
+  --order <asc|desc>   Sort order (leaderboards, default desc)
+  --min <n>            Minimum primary count (leaderboards)
+  --max <n>            Maximum primary count (leaderboards)
+  --exclude <list>     Skip signup classNames (raiders/streaks/specs/classes)
   --json               Print JSON
   -h, --help           Help
 
 Examples:
   npm run report -- summary
-  npm run report -- leaders
-  npm run report -- raiders --exclude absence,bench,tentative
-  npm run report -- leaders --limit 50 --json
+  npm run report -- specs --exclude absence,bench,tentative
+  npm run report -- classes
+  npm run report -- streaks --exclude absence,bench,tentative
+  npm run report -- alts --min 2
 `);
 }
 
@@ -163,8 +196,8 @@ function parseArgs(argv: string[]) {
   if (min != null && max != null && min > max) {
     throw new Error("--min cannot be greater than --max");
   }
-  if (exclude.length > 0 && name !== "raiders") {
-    throw new Error("--exclude is only supported for the raiders report");
+  if (exclude.length > 0 && !EXCLUDE_REPORTS.has(name as ReportName)) {
+    throw new Error("--exclude is only supported for raiders, streaks, specs, and classes");
   }
 
   return { name: name as ReportName, from, to, limit, order, min, max, exclude, json } satisfies ReportArgs;
@@ -199,22 +232,53 @@ async function main() {
 
   if (args.name === "leaders") {
     const rows = await buildLeaders(filters, options);
-    if (args.json) {
-      console.log(JSON.stringify(rows, null, 2));
-    } else {
-      console.log(formatLeaders(rows));
-    }
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatLeaders(rows));
     return;
   }
 
   if (args.name === "raiders") {
     const raiderOptions: RaidersOptions = { ...options, exclude: args.exclude };
     const rows = await buildRaiders(filters, raiderOptions);
-    if (args.json) {
-      console.log(JSON.stringify(rows, null, 2));
-    } else {
-      console.log(formatRaiders(rows));
-    }
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatRaiders(rows));
+    return;
+  }
+
+  if (args.name === "roles") {
+    const rows = await buildRoles(filters, options);
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatRoles(rows));
+    return;
+  }
+
+  if (args.name === "specs") {
+    const specOptions: RaidersOptions = { ...options, exclude: args.exclude };
+    const rows = await buildSpecs(filters, specOptions);
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatSpecs(rows));
+    return;
+  }
+
+  if (args.name === "classes") {
+    const classOptions: RaidersOptions = { ...options, exclude: args.exclude };
+    const rows = await buildClasses(filters, classOptions);
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatClasses(rows));
+    return;
+  }
+
+  if (args.name === "streaks") {
+    const streakOptions: RaidersOptions = { ...options, exclude: args.exclude };
+    const rows = await buildStreaks(filters, streakOptions);
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatStreaks(rows));
+    return;
+  }
+
+  if (args.name === "alts") {
+    const rows = await buildAlts(filters, options);
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatAlts(rows));
+    return;
+  }
+
+  if (args.name === "difficulties") {
+    const rows = await buildDifficulties(filters, options);
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatDifficulties(rows));
   }
 }
 
