@@ -39,17 +39,19 @@ npm run data -- --from 2026-08-01 --to 2026-08-31
 
 ## Reports
 
-Reports read from the cache only. Optional shared flags: `--from`, `--to`, `--json`.
+Reports read from the cache only. Optional shared flags: `--from`, `--to`, `--limit`, `--json`.
 
 ```bash
 npm run report -- <name>
 npm run report -- <name> --from 2024-01-01 --to 2024-12-31
+npm run report -- <name> --limit 50
 npm run report -- <name> --json
 ```
 
-| Report    | Description          |
-| --------- | -------------------- |
-| `summary` | Overall scalar stats |
+| Report    | Description                           |
+| --------- | ------------------------------------- |
+| `summary` | Overall scalar stats                  |
+| `leaders` | Raid leader leaderboard (event count) |
 
 ## Development
 

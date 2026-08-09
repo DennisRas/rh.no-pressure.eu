@@ -1,4 +1,4 @@
-/** ISO date or unix seconds → unix seconds. */
+// Accepts ISO date or unix seconds.
 export function toUnix(value: string): number {
   if (/^\d+$/.test(value)) return Number(value);
   const ms = Date.parse(value);

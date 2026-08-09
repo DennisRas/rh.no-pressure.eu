@@ -6,9 +6,9 @@ export type Character = {
 export type Leader = {
   userId: string;
   name: string; // most recent leaderName
-  names: string[]; // all leaderName variants
+  names: string[];
   events: number;
-  signupNames: string[]; // names used when signing on their own events
+  signupNames: string[];
   characters: Character[];
 };
 
@@ -16,7 +16,7 @@ export type Raider = {
   userId: string;
   name: string; // most recent signup name
   names: string[];
-  signups: number; // total signup rows
-  events: number; // distinct events
+  signups: number;
+  events: number; // distinct events signed
   characters: Character[];
 };

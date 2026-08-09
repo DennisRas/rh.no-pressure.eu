@@ -1,10 +1,17 @@
+export type LeaderboardRow = {
+  rank: number;
+  userId: string;
+  name: string;
+  events: number;
+};
+
 export type SummaryStats = {
   events: number;
   firstEvent: string;
   lastEvent: string;
-  daysCovered: number; // inclusive days from first event to last
+  daysCovered: number;
   weeksCovered: number;
-  activeYears: number; // years with at least one event
+  activeYears: number;
   avgEventsPerWeek: number;
   avgEventsPerMonth: number;
   busiestYear: string;
@@ -15,7 +22,7 @@ export type SummaryStats = {
   busiestMonthEvents: number;
   busiestDay: string; // YYYY-MM-DD
   busiestDayEvents: number;
-  longestGapDays: number; // biggest gap between consecutive events
+  longestGapDays: number;
   weekendEvents: number;
   weekdayEvents: number;
   weekendEventPercent: number;
@@ -27,18 +34,18 @@ export type SummaryStats = {
   topLeaderEvents: number;
   topRaider: string;
   topRaiderEvents: number;
-  oneTimeLeaders: number; // hosted exactly one event
-  oneTimeRaiders: number; // signed exactly one event
+  oneTimeLeaders: number;
+  oneTimeRaiders: number;
   totalSignups: number;
   avgSignupsPerEvent: number;
   medianSignupsPerEvent: number;
   maxSignupsOnEvent: number;
   minSignupsOnEvent: number;
-  emptyEvents: number; // zero signups
+  emptyEvents: number;
   absenceSignups: number;
   benchSignups: number;
   tentativeSignups: number;
-  titleMythic: number; // title contains "mythic"
+  titleMythic: number;
   titleHeroic: number;
   titleNormal: number;
   busiestWeekday: string;
