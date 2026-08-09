@@ -2,6 +2,9 @@ import { listCachedEvents } from "../../cache/events.ts";
 import { signupCount } from "../../helpers/events.ts";
 import { groupLeaders } from "../../helpers/leaders.ts";
 import { maxEntry, median, round } from "../../helpers/math.ts";
+import chalk from "chalk";
+import isUnicodeSupported from "is-unicode-supported";
+import { getBorderCharacters, table } from "table";
 import { groupRaiders } from "../../helpers/raiders.ts";
 import { toIsoDate } from "../../helpers/time.ts";
 import type { EventFilters } from "../../types/events.ts";
@@ -236,6 +239,11 @@ export function formatSummary(stats: SummaryStats): string {
     ["Shortest event", `${stats.shortestEventMinutes} min - ${stats.shortestEventTitle}`],
   ] as const;
 
-  const width = Math.max(...lines.map(([label]) => label.length));
-  return lines.map(([label, value]) => `${label.padEnd(width)}  ${value}`).join("\n");
+  return table(
+    [[chalk.cyan("Metric"), chalk.cyan("Value")], ...lines.map(([label, value]) => [label, String(value)])],
+    {
+      border: getBorderCharacters(isUnicodeSupported() ? "norc" : "ramac"),
+      drawHorizontalLine: (index, count) => index === 0 || index === 1 || index === count,
+    },
+  );
 }

@@ -1,3 +1,6 @@
+import chalk from "chalk";
+import isUnicodeSupported from "is-unicode-supported";
+import { getBorderCharacters, table } from "table";
 import { listCachedEvents } from "../../cache/events.ts";
 import { groupRaiders } from "../../helpers/raiders.ts";
 import type { EventFilters } from "../../types/events.ts";
@@ -42,15 +45,18 @@ export async function buildRaiders(
 export function formatRaiders(rows: LeaderboardRow[]): string {
   if (rows.length === 0) return "No raiders found.";
 
-  const rankWidth = String(rows[rows.length - 1]!.rank).length;
-  const nameWidth = Math.max(4, ...rows.map((row) => row.name.length));
-  const eventsWidth = Math.max(6, ...rows.map((row) => String(row.events).length));
-
-  const header = `${"#".padStart(rankWidth)}  ${"Name".padEnd(nameWidth)}  ${"Events".padStart(eventsWidth)}`;
-  const lines = rows.map(
-    (row) =>
-      `${String(row.rank).padStart(rankWidth)}  ${row.name.padEnd(nameWidth)}  ${String(row.events).padStart(eventsWidth)}`,
+  return table(
+    [
+      [chalk.cyan("#"), chalk.cyan("Name"), chalk.cyan("Events")],
+      ...rows.map((row) => [String(row.rank), row.name, String(row.events)]),
+    ],
+    {
+      border: getBorderCharacters(isUnicodeSupported() ? "norc" : "ramac"),
+      columns: {
+        0: { alignment: "right" },
+        2: { alignment: "right" },
+      },
+      drawHorizontalLine: (index, count) => index === 0 || index === 1 || index === count,
+    },
   );
-
-  return [header, ...lines].join("\n");
 }

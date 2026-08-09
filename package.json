@@ -14,7 +14,10 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "dotenv": "^16.4.7"
+    "chalk": "^6.0.0",
+    "dotenv": "^16.4.7",
+    "is-unicode-supported": "^2.1.0",
+    "table": "^6.9.0"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
