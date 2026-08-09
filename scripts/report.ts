@@ -10,9 +10,11 @@ import { buildRoles, formatRoles } from "./reports/roles.ts";
 import { buildSpecs, formatSpecs } from "./reports/specs.ts";
 import { buildStreaks, formatStreaks } from "./reports/streaks.ts";
 import { buildSummary, formatSummary } from "./reports/summary.ts";
+import { buildCalendar, formatCalendar } from "./reports/calendar.ts";
 
 const REPORTS = [
   "summary",
+  "calendar",
   "leaders",
   "raiders",
   "roles",
@@ -83,6 +85,7 @@ function printHelp() {
 
 Reports (cache only):
   summary
+  calendar
   leaders
   raiders
   roles
@@ -93,9 +96,9 @@ Reports (cache only):
   difficulties
 
 Options:
-  --from <date|unix>   Earliest event start
+  --from <date|unix>   Earliest event start (calendar defaults to now)
   --to <date|unix>     Latest event start
-  --limit <n>          Max rows for leaderboards (default 25, 0 = all)
+  --limit <n>          Max rows (leaderboards default 25, calendar default all)
   --order <asc|desc>   Sort order (leaderboards, default desc)
   --min <n>            Minimum primary count (leaderboards)
   --max <n>            Maximum primary count (leaderboards)
@@ -105,9 +108,9 @@ Options:
 
 Examples:
   npm run report -- summary
+  npm run report -- calendar
+  npm run report -- calendar --from 2026-08-01 --to 2026-08-31
   npm run report -- specs --exclude absence,bench,tentative
-  npm run report -- classes
-  npm run report -- streaks --exclude absence,bench,tentative
   npm run report -- alts --min 2
 `);
 }
@@ -146,7 +149,7 @@ function parseArgs(argv: string[]) {
 
   let from: number | undefined;
   let to: number | undefined;
-  let limit = 25;
+  let limit = name === "calendar" ? 0 : 25;
   let order: "asc" | "desc" = "desc";
   let min: number | undefined;
   let max: number | undefined;
@@ -167,15 +170,24 @@ function parseArgs(argv: string[]) {
       limit = parseNonNegInt("--limit", next);
       i += 1;
     } else if (arg === "--order" && next) {
+      if (name === "calendar") {
+        throw new Error("--order is not supported for calendar");
+      }
       if (next !== "asc" && next !== "desc") {
         throw new Error("--order must be asc or desc");
       }
       order = next;
       i += 1;
     } else if (arg === "--min" && next) {
+      if (name === "calendar") {
+        throw new Error("--min is not supported for calendar");
+      }
       min = parseNonNegInt("--min", next);
       i += 1;
     } else if (arg === "--max" && next) {
+      if (name === "calendar") {
+        throw new Error("--max is not supported for calendar");
+      }
       max = parseNonNegInt("--max", next);
       i += 1;
     } else if (arg === "--exclude" && next) {
@@ -199,12 +211,20 @@ function parseArgs(argv: string[]) {
   if (exclude.length > 0 && !EXCLUDE_REPORTS.has(name as ReportName)) {
     throw new Error("--exclude is only supported for raiders, streaks, specs, and classes");
   }
+  if (name === "calendar" && exclude.length > 0) {
+    throw new Error("--exclude is not supported for calendar");
+  }
 
   return { name: name as ReportName, from, to, limit, order, min, max, exclude, json } satisfies ReportArgs;
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+
+  if (args.name === "calendar" && args.from == null) {
+    args.from = Math.floor(Date.now() / 1000);
+  }
+
   const filters: EventFilters = {};
   if (args.from != null) filters.startTime = args.from;
   if (args.to != null) filters.endTime = args.to;
@@ -220,6 +240,12 @@ async function main() {
     } else {
       console.log(formatSummary(stats));
     }
+    return;
+  }
+
+  if (args.name === "calendar") {
+    const rows = await buildCalendar(filters, { limit: args.limit });
+    console.log(args.json ? JSON.stringify(rows, null, 2) : formatCalendar(rows));
     return;
   }
 

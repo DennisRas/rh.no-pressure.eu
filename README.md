@@ -67,6 +67,23 @@ npm run report -- summary --from 2026-01-01 --to 2026-12-31
 npm run report -- summary --json
 ```
 
+### `calendar`
+
+Event schedule. Defaults to future events; use `--from` / `--to` for any window.
+
+| Argument              | Default | Description          |
+| --------------------- | ------- | -------------------- |
+| `--from <date\|unix>` | now     | Earliest event start |
+| `--to <date\|unix>`   | open    | Latest event start   |
+| `--limit <n>`         | all     | Max rows (`0` = all) |
+| `--json`              | off     | Print JSON           |
+
+```bash
+npm run report -- calendar
+npm run report -- calendar --to 2026-08-31
+npm run report -- calendar --from 2026-08-01 --to 2026-08-31
+```
+
 ### `leaders`
 
 Leaderboard by events led.

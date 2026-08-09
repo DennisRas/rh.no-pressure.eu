@@ -63,6 +63,17 @@ export type DifficultyRow = {
   raiders: number;
 };
 
+export type CalendarRow = {
+  date: string; // YYYY-MM-DD UTC
+  weekday: string;
+  time: string; // HH:mm UTC
+  startTime: number;
+  difficulty: string;
+  signups: number;
+  leader: string;
+  title: string;
+};
+
 export type SummaryStats = {
   events: number;
   firstEvent: string;
